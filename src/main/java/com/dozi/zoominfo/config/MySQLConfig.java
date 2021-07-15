@@ -1,6 +1,5 @@
 package com.dozi.zoominfo.config;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.Duration;
 
@@ -32,17 +31,17 @@ public class MySQLConfig {
 
 	@Bean
 	@Primary
-	public ConnectionPool connectionPool() throws UnsupportedEncodingException {
+	public ConnectionPool connectionPool() {
 
 		String r2dbcURL = String.format(env.getProperty("account.dbUrl"),
-				// Plug in the decryption here 
-				URLEncoder.encode(env.getProperty("username")),
+				// Plug in the decryption here
+				URLEncoder.encode(env.getProperty("username")), 
 				URLEncoder.encode(env.getProperty("password")));
+// 		log.info("r2dbcURL: {}", r2dbcURL);
 
-		// log.info("r2dbcURL: {}", r2dbcURL);
 		ConnectionPoolConfiguration configuration = ConnectionPoolConfiguration
-				.builder(ConnectionFactories.get(r2dbcURL)).maxIdleTime(Duration.ofSeconds(300)).initialSize(10)
-				.maxSize(20).maxCreateConnectionTime(Duration.ofSeconds(5)).validationQuery("SELECT 1").build();
+				.builder(ConnectionFactories.get(r2dbcURL)).maxSize(100).maxCreateConnectionTime(Duration.ofSeconds(5))
+				.backgroundEvictionInterval(Duration.ofSeconds(60)).validationQuery("SELECT 1").build();
 		return new ConnectionPool(configuration);
 	}
 
